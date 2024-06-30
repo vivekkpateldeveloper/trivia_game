@@ -132,7 +132,8 @@ const Questions = () => {
               </Grid>
               {showExplanation && (
                 <Typography variant="body1" style={{ marginTop: "10px" }}>
-                  Correct Answer is {currentQuestion?.correct_answer}
+                  Correct Answer is{" "}
+                  <strong>{currentQuestion?.correct_answer}</strong>
                 </Typography>
               )}
               {!showNextButton && selectedAnswer && (
