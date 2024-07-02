@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Button, Typography, Container, Grid, Card } from "@mui/material";
-// import { getQuestions } from "../../service/quiz";
-import { apiData } from "../questionData";
 import Result from "../Result";
 import { QuizQuestion } from "../../interface";
 import { ShuffleArray } from "../../utils/suffleArray";
+import { Loader } from "../../component/loader";
+import { getQuestions } from "../../service/quiz";
 
 const Questions = () => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -16,11 +16,34 @@ const Questions = () => {
   const [totalCorrect, setTotalCorrect] = useState<number>(0);
   const [totalIncorrect, setTotalIncorrect] = useState<number>(0);
   const [quizComplete, setQuizComplete] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      setQuestions(apiData?.results);
-      // const response = await getQuestions();
+      try {
+        const response = await getQuestions();
+
+        const questions = response?.results;
+
+        const easy = questions.filter(
+          (q: QuizQuestion) => q.difficulty === "easy"
+        );
+        const medium = questions.filter(
+          (q: QuizQuestion) => q.difficulty === "medium"
+        );
+        const hard = questions.filter(
+          (q: QuizQuestion) => q.difficulty === "hard"
+        );
+
+        const combined = [...easy, ...medium, ...hard];
+        setQuestions(combined);
+        setLoading(false);
+      } catch (error) {
+        setQuestions([]);
+        setError("Failed to load questions");
+        setLoading(false);
+      }
     };
     fetchQuestions();
   }, []);
@@ -29,8 +52,8 @@ const Questions = () => {
     if (questions?.length > 0) {
       const currentQuestion = questions[currentQuestionIndex];
       const allAnswers = ShuffleArray([
-        ...currentQuestion.incorrect_answers,
-        currentQuestion.correct_answer,
+        ...currentQuestion?.incorrect_answers,
+        currentQuestion?.correct_answer,
       ]);
       setShuffledAnswers(allAnswers);
     }
@@ -54,20 +77,24 @@ const Questions = () => {
   };
 
   const handleNextClick = () => {
-    if (currentQuestionIndex + 1 === questions.length) {
+    if (currentQuestionIndex + 1 === questions?.length) {
       setQuizComplete(true);
     } else {
       setShowNextButton(false);
       setSelectedAnswer(null);
       setShowExplanation(false);
       setCurrentQuestionIndex(
-        (prevIndex) => (prevIndex + 1) % questions.length
+        (prevIndex) => (prevIndex + 1) % questions?.length
       );
     }
   };
 
-  if (questions.length === 0) {
-    return <div>No questions available</div>;
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (loading) {
+    return <Loader />;
   }
 
   const currentQuestion = questions[currentQuestionIndex];
@@ -83,7 +110,7 @@ const Questions = () => {
       ) : (
         <>
           <h1>
-            Question {currentQuestionIndex + 1} / {questions.length}
+            Question {currentQuestionIndex + 1} / {questions?.length}
           </h1>
           <Container maxWidth="sm">
             <Card
@@ -93,15 +120,19 @@ const Questions = () => {
                 textAlign: "center",
               }}
             >
-              <Typography variant="h5">{currentQuestion.difficulty}</Typography>
-              <Typography variant="h5">{currentQuestion.question}</Typography>
+              <Typography className="label-square">
+                {currentQuestion?.difficulty}
+              </Typography>
+              <Typography style={{ textAlign: "left" }} variant="h5">
+                {currentQuestion?.question}
+              </Typography>
               <Grid container spacing={2}>
-                {shuffledAnswers.map((answer, index) => {
+                {shuffledAnswers?.map((answer, index) => {
                   let backgroundColor: string | undefined;
 
                   if (showNextButton) {
                     if (
-                      answer === currentQuestion.correct_answer &&
+                      answer === currentQuestion?.correct_answer &&
                       answer === selectedAnswer
                     ) {
                       backgroundColor = "green";
