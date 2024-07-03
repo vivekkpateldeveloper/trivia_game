@@ -99,6 +99,10 @@ const Questions = () => {
 
   const currentQuestion = questions[currentQuestionIndex];
 
+  const decodeHtmlEntities = (str: string) => {
+    return str.replace(/&quot;/g, '"').replace(/&#039;/g, "'");
+  };
+
   return (
     <div>
       {quizComplete ? (
@@ -124,12 +128,15 @@ const Questions = () => {
                 {currentQuestion?.difficulty}
               </Typography>
               <Typography style={{ textAlign: "left" }} variant="h5">
-                {currentQuestion?.question}
+                <b>Q.</b>{" "}
+                {currentQuestion
+                  ? decodeHtmlEntities(currentQuestion?.question)
+                  : ""}
               </Typography>
               <Grid container spacing={2}>
                 {shuffledAnswers?.map((answer, index) => {
                   let backgroundColor: string | undefined;
-
+                  
                   if (showNextButton) {
                     if (
                       answer === currentQuestion?.correct_answer &&
@@ -155,7 +162,7 @@ const Questions = () => {
                         }}
                         disabled={showNextButton}
                       >
-                        {answer}
+                        {answer ? decodeHtmlEntities(answer) : ""}
                       </Button>
                     </Grid>
                   );

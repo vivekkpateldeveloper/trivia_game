@@ -20,7 +20,7 @@ const StartQuiz = () => {
             10 questions to test your knowledge{" "}
           </Typography>
           <Typography variant="h5">Good luck!</Typography>
-          <button id="startQuizBtn" onClick={handleStartQuiz}>
+          <button id="startQuizBtn" className="button-with-icon" onClick={handleStartQuiz}>
             Start Quiz
           </button>
         </>
