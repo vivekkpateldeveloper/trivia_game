@@ -186,14 +186,12 @@ const Questions = () => {
               )}
             </Card>
             {showNextButton && (
-              <Button
-                variant="contained"
-                color="primary"
+               <button id="startQuizBtn" className="btn-group"
                 onClick={handleNextClick}
                 style={{ marginTop: "20px" }}
               >
                 Next
-              </Button>
+              </button>
             )}
           </Container>
         </>

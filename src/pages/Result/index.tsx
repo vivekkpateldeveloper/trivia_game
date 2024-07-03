@@ -1,5 +1,4 @@
 import { Box, Card, Container, Typography } from "@mui/material";
-import { IoReloadCircle } from "react-icons/io5";
 
 const Result = ({ questions, totalCorrect, totalIncorrect }: any) => {
   return (
@@ -31,7 +30,7 @@ const Result = ({ questions, totalCorrect, totalIncorrect }: any) => {
               Total Incorrect Answers: {totalIncorrect}
             </Typography>
             <button
-              className="button-with-icon"
+              className="btn-group"
               onClick={() => window.location.reload()}
             >
               Re-start
